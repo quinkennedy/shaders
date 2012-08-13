@@ -1,0 +1,7 @@
+<filter name="Move Snow Shader">
+    <description>Updates the position of the particles of snow</description>
+    <fragment>MoveSnowFar.glsl</fragment>
+    <textures input="1" output="1"></textures>
+    <parameter type="vec2" name="dim" label="texture size">0 0</parameter>
+    <parameter type="vec4" name="additions" label="points to add">-1 -1 -1 -1</parameter>
+</filter>
