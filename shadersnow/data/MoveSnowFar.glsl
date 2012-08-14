@@ -94,7 +94,7 @@ void main(void)
             //check diagonals
             float checkX = tex_coord.x - xStepSize;
             bool atEdge = checkX <= 0.0;
-            float checkY = tex_coord.y + yStepSize;
+            float checkY = tex_coord.y - yStepSize;
             if (!atEdge){
                 vec4 currPix = texture2D(src_tex_unit0, vec2(checkX, checkY));
                 if (leansRight(currPix)){
