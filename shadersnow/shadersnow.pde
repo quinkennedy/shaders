@@ -20,7 +20,7 @@ void draw(){
   GLTexture inputTex = partPosTex.getReadTex();
   GLTexture outputTex = partPosTex.getWriteTex();
   
-  movePartFilter.setParameterValue("additions", new float[]{random(20), random(20), random(20), random(20)});
+  movePartFilter.setParameterValue("additions", new float[]{random(20), random(20), random(20)+width-20, random(20)+width-20});
   
   movePartFilter.apply(inputTex, outputTex);
   image(outputTex, 0, 0, width, height);
@@ -38,7 +38,7 @@ void initTextures(){
   partPosTex = new GLTexturePingPong(new GLTexture(this, width, height, filterTexParams),
                                     new GLTexture(this, width, height, filterTexParams));
                                  
-  partPosTex.getReadTex().setRandom(0, .6, 0, 0, 0, 0, 1, 1);
+  partPosTex.getReadTex().setRandom(0, .56, 0, 0, 0, 0, 1, 1);
   println("size of texture: " + partPosTex.getReadTex().width + "x" + 
           partPosTex.getReadTex().height);
 }
