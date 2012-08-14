@@ -98,8 +98,12 @@ void main(void)
             if (!atEdge){
                 vec4 currPix = texture2D(src_tex_unit0, vec2(checkX, checkY));
                 if (leansRight(currPix)){
-                    willBeEmpty = false;
-                    leanRight = true;
+                    //make sure pixel is blocked from below
+                    currPix = texture2D(src_tex_unit0, vec2(checkX, tex_coord.y));
+                    if (!isEmpty(currPix)){
+                        willBeEmpty = false;
+                        leanRight = true;
+                    }
                 }
             }
             if (willBeEmpty){
@@ -108,8 +112,12 @@ void main(void)
                 if (!atEdge){
                     currPix = texture2D(src_tex_unit0, vec2(checkX, checkY));
                     if (!isEmpty(currPix) && !leansRight(currPix)){
-                        willBeEmpty = false;
-                        leanRight = false;
+                        //make sure pixel is blocked from below
+                        currPix = texture2D(src_tex_unit0, vec2(checkX, tex_coord.y));
+                        if (!isEmpty(currPix)){
+                            willBeEmpty = false;
+                            leanRight = false;
+                        }
                     }
                 }
             }
