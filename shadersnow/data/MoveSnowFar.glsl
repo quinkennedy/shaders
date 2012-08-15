@@ -41,21 +41,30 @@ void main(void)
             willBeEmpty = true;
         } else if (!atBottom){
             //check to the left or right depending on leanRight
-            float checkX = tex_coord.x + (leanRight ? 1.0 : -1.0)/dim.x;
-            //check one below to see if empty
-            vec4 below = texture2D(src_tex_unit0, vec2(checkX, belowY));
-            if (below[0] < .5){
-                //check n above to see if empty
-                float checkY = belowY;
-                for(int i = 0; i < numToDo; i++){
-                    checkY -= yStepSize;
-                    vec4 toCheck = texture2D(src_tex_unit0, vec2(checkX, checkY));
-                    if (!isEmpty(toCheck)){//toCheck[0] >= .5){
-                        break;
-                    } else if (i == numToDo-1){
-                        willBeEmpty = true;
+            float checkX = tex_coord.x - xStepSize;// + (leanRight ? 1.0 : -1.0)/dim.x;
+            for(int i = 0; i < 2; i++){
+                bool atEdge = checkX <= 0.0 || checkX >= 1.0;
+                if (!atEdge){
+                    //check one below to see if empty
+                    vec4 below = texture2D(src_tex_unit0, vec2(checkX, belowY));
+                    if (below[0] < .5){
+                        //check n above to see if empty
+                        float checkY = belowY;
+                        for(int i = 0; i < numToDo; i++){
+                            checkY -= yStepSize;
+                            atEdge = checkY <= 0.0;
+                            if (!atEdge){
+                                vec4 toCheck = texture2D(src_tex_unit0, vec2(checkX, checkY));
+                                if (!isEmpty(toCheck)){//toCheck[0] >= .5){
+                                    break;
+                                } else if (i == numToDo-1){
+                                    willBeEmpty = true;
+                                }
+                            }
+                        }
                     }
                 }
+                checkX += xStepSize * 2.0;
             }
         } else {
             //at bottom
@@ -93,11 +102,11 @@ void main(void)
         } else {
             //check diagonals
             float checkX = tex_coord.x - xStepSize;
-            bool atEdge = checkX <= 0.0;
             float checkY = tex_coord.y - yStepSize;
+            bool atEdge = checkX <= 0.0 || checkY <= 0.0;
             if (!atEdge){
                 vec4 currPix = texture2D(src_tex_unit0, vec2(checkX, checkY));
-                if (leansRight(currPix)){
+                if (!isEmpty(currPix)){//leansRight(currPix)){
                     //make sure pixel is blocked from below
                     currPix = texture2D(src_tex_unit0, vec2(checkX, tex_coord.y));
                     if (!isEmpty(currPix)){
@@ -108,10 +117,10 @@ void main(void)
             }
             if (willBeEmpty){
                 checkX += 2.0 * xStepSize;
-                atEdge = checkX >= 1.0;
+                atEdge = checkX >= 1.0 || checkY <= 0.0;
                 if (!atEdge){
                     currPix = texture2D(src_tex_unit0, vec2(checkX, checkY));
-                    if (!isEmpty(currPix) && !leansRight(currPix)){
+                    if (!isEmpty(currPix)){// && !leansRight(currPix)){
                         //make sure pixel is blocked from below
                         currPix = texture2D(src_tex_unit0, vec2(checkX, tex_coord.y));
                         if (!isEmpty(currPix)){
@@ -128,7 +137,7 @@ void main(void)
     } 
     if (tex_coord.y < yStepSize/2.0){
         for(int i = 0; i < 4; i++){
-            if (additions[i]/dim.x < tex_coord.x + yStepSize/2.0 && additions[i]/dim.x > tex_coord.x - yStepSize/2.0){
+            if (additions[i] >= 0.0 && additions[i]/dim.x < tex_coord.x + yStepSize/2.0 && additions[i]/dim.x > tex_coord.x - yStepSize/2.0){
                 willBeEmpty = false;
                 leanRight = additions[i]/dim.x >= tex_coord.x;
             }

@@ -6,6 +6,10 @@ GLTexturePingPong partPosTex;
 GLTextureFilter movePartFilter;
 
 int sec0;
+int dropfrom;
+boolean dropping = true;
+int dropspread = 50;
+int currdropspread = 50;
 
 void setup(){
   size(800,600,GLConstants.GLGRAPHICS);
@@ -13,6 +17,16 @@ void setup(){
   
   initTextures();
   initFilters();
+  dropfrom = (int)random(width);
+}
+
+void mouseClicked(){
+  dropping = !dropping;
+  if (dropping){
+    dropfrom = (int)random(width);
+  } else {
+    movePartFilter.setParameterValue("additions", new float[]{-1,-1,-1,-1});
+  }
 }
 
 void draw(){
@@ -20,7 +34,9 @@ void draw(){
   GLTexture inputTex = partPosTex.getReadTex();
   GLTexture outputTex = partPosTex.getWriteTex();
   
-  movePartFilter.setParameterValue("additions", new float[]{random(20), random(20), random(20)+width-20, random(20)+width-20});
+  if (dropping){
+    movePartFilter.setParameterValue("additions", new float[]{random(dropspread)+dropfrom, random(dropspread)+dropfrom, random(dropspread)+dropfrom, random(dropspread)+dropfrom});
+  }
   
   movePartFilter.apply(inputTex, outputTex);
   image(outputTex, 0, 0, width, height);
@@ -38,7 +54,7 @@ void initTextures(){
   partPosTex = new GLTexturePingPong(new GLTexture(this, width, height, filterTexParams),
                                     new GLTexture(this, width, height, filterTexParams));
                                  
-  partPosTex.getReadTex().setRandom(0, .56, 0, 0, 0, 0, 1, 1);
+  partPosTex.getReadTex().setRandom(0, 0, 0, 0, 0, 0, 1, 1);
   println("size of texture: " + partPosTex.getReadTex().width + "x" + 
           partPosTex.getReadTex().height);
 }
